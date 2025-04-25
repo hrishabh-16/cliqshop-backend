@@ -49,7 +49,7 @@ The backend architecture is organized into the following key components:
 ### Security Features
 - **JWT Authentication**: Secure token-based authentication
 - **Role-based Access Control**: Admin and user role separation
-- **Password Encryption**: Secure password storage through hashing
+- **Password Encryption**: Secure password storage
 - **CORS Configuration**: Configured for secure cross-origin requests
 
 ### Data Management
@@ -145,8 +145,8 @@ cliqshop-backend/
 2. Get your API keys from the Stripe dashboard
 3. Add the keys to your `application.properties`:
    ```properties
-   stripe.api.secretKey=<sk_test_your_secret_key>
-   stripe.api.publishableKey=<pk_test_your_publishable_key>
+   stripe.api.secretKey=sk_test_your_secret_key
+   stripe.api.publishableKey=pk_test_your_publishable_key
    ```
 
 4. Set up Stripe Webhook:
@@ -157,7 +157,7 @@ cliqshop-backend/
      ```
    - Add the webhook secret to your `application.properties`:
      ```properties
-     stripe.webhook.secret=<whsec_your_webhook_secret>
+     stripe.webhook.secret=whsec_your_webhook_secret
      ```
 
 ### JWT Configuration
@@ -179,6 +179,8 @@ cliqshop-backend/
    ```
 
 2. **Configure application.properties**
+   
+   Create  the file `src/main/resources/application.properties` with the following settings:
    ```properties
    # Database
    spring.datasource.url=jdbc:mysql://localhost:3306/cliqshop?useSSL=false
@@ -196,6 +198,11 @@ cliqshop-backend/
    
    # Server port
    server.port=9000
+   
+   # For Stripe integration
+   stripe.api.secretKey=sk_test_your_secret_key
+   stripe.api.publishableKey=pk_test_your_publishable_key
+   stripe.webhook.secret=whsec_your_webhook_secret
    ```
 
 3. **Build the application**
