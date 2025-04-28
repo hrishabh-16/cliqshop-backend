@@ -78,6 +78,8 @@ cliqshop-backend/
 │   │       └── application.properties # Application configuration
 │   └── test/                          # Unit and integration tests
 ├── pom.xml                            # Maven dependencies
+├── Dockerfile                         # Instructions for Docker image creation
+├── docker-compose.yml                 # Docker Compose configuration
 └── README.md
 ```
 
@@ -103,6 +105,8 @@ cliqshop-backend/
 - **Stripe API**: Payment processing
 - **Maven**: Dependency management and build tool
 - **SLF4J**: Logging framework
+- **Docker**: Containerization platform
+- **Docker Compose**: Multi-container Docker applications
 
 ## 🔧 Dependencies Overview
 
@@ -122,8 +126,11 @@ cliqshop-backend/
 - Maven 3.8+
 - MySQL 8+
 - Stripe account (for payment processing)
+- Docker and Docker Compose (for containerized deployment)
 
-### Database Setup
+### Option 1: Standard Setup
+
+#### Database Setup
 1. Install MySQL if not already installed
    ```bash
    # For Ubuntu
@@ -140,7 +147,7 @@ cliqshop-backend/
 
 3. No manual table creation is required - JPA/Hibernate will automatically create tables based on entity classes when the application starts with `spring.jpa.hibernate.ddl-auto=update`.
 
-### Stripe Integration Setup
+#### Stripe Integration Setup
 1. Create a Stripe account at [stripe.com](https://stripe.com)
 2. Get your API keys from the Stripe dashboard
 3. Add the keys to your `application.properties`:
@@ -160,7 +167,7 @@ cliqshop-backend/
      stripe.webhook.secret=whsec_your_webhook_secret
      ```
 
-### JWT Configuration
+#### JWT Configuration
 1. Generate a secure random string for your JWT secret key
 2. Configure JWT in `application.properties`:
    ```properties
@@ -168,10 +175,7 @@ cliqshop-backend/
    jwt.expiration-time=86400000  # 24 hours in milliseconds
    ```
 
-
-
-## 🚀 Running the Application
-
+#### Running the Application (Standard)
 1. **Clone the repository**
    ```bash
    git clone https://github.com/hrishabh-16/cliqshop-backend.git
@@ -180,7 +184,7 @@ cliqshop-backend/
 
 2. **Configure application.properties**
    
-   Create  the file `src/main/resources/application.properties` with the following settings:
+   Create the file `src/main/resources/application.properties` with the following settings:
    ```properties
    # Database
    spring.datasource.url=jdbc:mysql://localhost:3306/cliqshop?useSSL=false
@@ -218,6 +222,99 @@ cliqshop-backend/
 5. **Verify the application is running**
    - Access the health endpoint: http://localhost:9000/api/health
    - API will be available at http://localhost:9000/api
+
+### Option 2: Docker Deployment
+
+#### Prerequisites
+- Docker 20.10+ and Docker Compose V2+
+- Git
+
+#### Running with Docker Compose
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/hrishabh-16/cliqshop-backend.git
+   cd cliqshop-backend
+   ```
+
+2. **Build the backend Docker image**
+   ```bash
+   docker build -t cliqshop-backend:latest .
+   ```
+
+3. **Build the frontend Docker image**
+   ```bash
+   # For the frontend application, please refer to the frontend repository:
+   # https://github.com/hrishabh-16/cliqshop-frontend
+
+4. **Start the entire application stack**
+   ```bash
+   docker-compose up -d
+   ```
+
+5. **Verify the application is running**
+   - Backend: http://localhost:9000/api/health
+   - Frontend: http://localhost:4200
+
+#### Docker Configuration Details
+
+The Docker setup includes:
+
+1. **Database container**:
+   - MySQL 8.0 with automatic database creation
+   - Persistent volume for data storage
+   - Accessible on port 3307 (mapped from 3306)
+
+2. **Backend container**:
+   - Java 17 with Spring Boot
+   - Built using Maven
+   - Configured to wait for database readiness
+   - Accessible on port 9000
+
+3. **Frontend container**:
+   - Angular application
+   - Accessible on port 4200
+
+#### Docker Environment Variables
+
+You can customize the Docker environment by modifying the `docker-compose.yml` file:
+
+- Database settings:
+  ```yaml
+  MYSQL_ROOT_PASSWORD: root
+  MYSQL_DATABASE: clickshop
+  MYSQL_USER: cliqshop
+  MYSQL_PASSWORD: cliqshop
+  ```
+
+- Backend settings:
+  ```yaml
+  SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/clickshop?useSSL=false&allowPublicKeyRetrieval=true&createDatabaseIfNotExist=true
+  SPRING_DATASOURCE_USERNAME: cliqshop
+  SPRING_DATASOURCE_PASSWORD: cliqshop
+  ```
+
+#### Docker Commands
+
+- **Start the application**:
+  ```bash
+  docker-compose up -d
+  ```
+
+- **View logs**:
+  ```bash
+  docker-compose logs -f
+  ```
+
+- **Stop the application**:
+  ```bash
+  docker-compose down
+  ```
+
+- **Stop and remove volumes**:
+  ```bash
+  docker-compose down -v
+  ```
 
 ## 🔮 Future Implementations
 
