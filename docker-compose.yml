@@ -1,0 +1,63 @@
+
+services:
+  # MySQL Database
+  db:
+    image: mysql:8.0
+    container_name: cliqshop-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: clickshop
+      MYSQL_USER: cliqshop
+      MYSQL_PASSWORD: cliqshop
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - cliqshop-network
+    # Add healthcheck to ensure database is ready
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Spring Boot Backend
+  backend:
+    image: cliqshop-backend:latest
+    container_name: cliqshop-backend
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/clickshop?useSSL=false&allowPublicKeyRetrieval=true&createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: cliqshop
+      SPRING_DATASOURCE_PASSWORD: cliqshop
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.MySQLDialect
+      SERVER_PORT: 9000
+    ports:
+      - "9000:9000"
+    networks:
+      - cliqshop-network
+
+  # Angular Frontend
+  frontend:
+    image: cliqshop-frontend:latest  # This assumes you've fixed the build issue
+    container_name: cliqshop-frontend
+    restart: always
+    depends_on:
+      - backend
+    ports:
+      - "4200:4200"
+    networks:
+      - cliqshop-network
+
+networks:
+  cliqshop-network:
+    driver: bridge
+
+volumes:
+  mysql-data:
