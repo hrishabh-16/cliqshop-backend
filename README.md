@@ -239,7 +239,7 @@ cliqshop-backend/
 
 2. **Build the backend Docker image**
    ```bash
-   docker build -t cliqshop-backend:latest .
+   docker build -t cliqshop-backend .
    ```
 
 3. **Build the frontend Docker image**
